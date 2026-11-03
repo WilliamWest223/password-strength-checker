@@ -42,3 +42,22 @@ test("CLI accepts one password argument", () => {
   assert.equal(exitCode, 0);
   assert.match(output.logs[0], /Password received/);
 });
+
+test("CLI reports a common password as weak", () => {
+  const output = createOutput();
+
+  run(["password"], output);
+
+  assert.ok(output.logs.some((l) => /Common password: YES/.test(l)));
+  assert.match(output.logs.at(-1), /WEAK/);
+});
+
+test("CLI reports a strong password", () => {
+  const output = createOutput();
+
+  run(["x7#Lq!9vR2@m"], output);
+
+  assert.ok(output.logs.some((l) => /Rules: all passed/.test(l)));
+  assert.ok(output.logs.some((l) => /Entropy: \d+\.\d bits/.test(l)));
+  assert.match(output.logs.at(-1), /STRONG/);
+});

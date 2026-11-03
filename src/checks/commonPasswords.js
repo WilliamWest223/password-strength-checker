@@ -1,7 +1,20 @@
 /**
- * TODO: Load and check the common-password list.
+ * Load the common-password list and check passwords against it (case-insensitive).
  */
 
-export function isCommonPassword(_password, _passwordList) {
-  throw new Error("Common-password check not implemented");
+import { readFileSync } from "node:fs";
+
+export const DEFAULT_LIST_PATH = new URL("../../data/common-passwords.txt", import.meta.url);
+
+export function loadPasswordList(path = DEFAULT_LIST_PATH) {
+  return new Set(
+    readFileSync(path, "utf8")
+      .split(/\r?\n/)
+      .map((line) => line.trim().toLowerCase())
+      .filter((line) => line && !line.startsWith("#")),
+  );
+}
+
+export function isCommonPassword(password, passwordList) {
+  return passwordList.has(password.toLowerCase());
 }
